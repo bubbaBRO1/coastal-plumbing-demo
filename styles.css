@@ -197,3 +197,58 @@ form:not(.chat-input) .btn { margin-top: 22px; width: 100%; }
   .chat-panel { bottom: 20px; }
   .footer-inner { grid-template-columns: 1fr 1fr; align-items: start; }
 }
+
+/* ---------- FAQ ----------
+   Native <details>/<summary>: no JavaScript, keyboard accessible and
+   screen-reader friendly for free, works with JS off, and the answer text is
+   indexable — which is worth more for a local business than any animation. */
+.faq-list {
+  max-width: 760px;
+  border-top: 1px solid var(--line);
+}
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 4px;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+/* Safari/Chrome draw their own triangle; we supply our own +/- instead. */
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::marker { content: ""; }
+.faq-item summary:hover { color: var(--copper); }
+.faq-item summary:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 2px;
+}
+.faq-item summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--copper);
+  transition: transform 0.2s ease;
+}
+.faq-item[open] summary::after {
+  content: "\2212";  /* minus sign */
+}
+.faq-item p {
+  margin: 0;
+  padding: 0 4px 22px;
+  max-width: 66ch;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+@media (max-width: 600px) {
+  .faq-item summary { font-size: 1rem; padding: 18px 4px; }
+}
