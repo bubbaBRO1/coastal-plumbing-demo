@@ -1,0 +1,400 @@
+/* Wavemark plumbing — PREMIUM pass (v2).
+ *
+ * Loads AFTER styles.css and overrides only what makes the original read
+ * "basic". Same HTML, so v1 and v2 can be compared side by side and v1 stays
+ * shippable if this is rejected.
+ *
+ * Diagnosis from the side-by-side against the reference sites:
+ *   1. --radius: 3px          -> sharp corners read cheap; reference uses pills
+ *   2. uppercase on ALL h1-h3 -> constant shouting; reference uses sentence case
+ *   3. Oswald condensed       -> narrow + heavy; reference is light and airy
+ *   4. tight section padding  -> no breathing room; space is what reads premium
+ *   5. flat orange slab CTAs  -> the single most "template" looking element
+ */
+
+/* Outfit/Manrope mirror the reference pairing: geometric display + humanist body. */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Manrope:wght@400;500;600;700&display=swap");
+
+:root {
+  /* Softer, deeper neutrals — less "steel blue", more architectural stone. */
+  --steel: #16181c;
+  --steel-deep: #0d0f12;
+  --paper: #faf9f7;
+  --paper-card: #ffffff;
+  --ink: #16181c;
+  /* Darkened from #565f68 -> #4a5259 so body copy clears WCAG AA on stone. */
+  --ink-soft: #4a5259;
+  /* Copper lightened so it clears 3:1 on the dark hero (was 2.34:1 — measured). */
+  --copper: #c9603a;
+  --copper-hero: #f09664;
+  --copper-deep: #a44a26;
+  --copper-light: #f0d3c0;
+  --line: #e5e1da;
+
+  --radius: 14px;
+  --radius-pill: 999px;
+  --shadow: 0 1px 2px rgba(22, 24, 28, 0.04), 0 12px 40px rgba(22, 24, 28, 0.08);
+  --shadow-lift: 0 2px 4px rgba(22, 24, 28, 0.06), 0 24px 60px rgba(22, 24, 28, 0.14);
+
+  --display: "Outfit", system-ui, sans-serif;
+  --body: "Manrope", system-ui, sans-serif;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body { font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+
+/* --- Typography: sentence case, lighter weight, tighter tracking --- */
+h1, h2, h3, .logo {
+  font-family: var(--display);
+  text-transform: none;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+}
+/* Capped at 4rem: at 5rem the two-line headline pushed the CTAs near the fold
+ * and killed the breathing room the light weight is supposed to buy. */
+h1 { font-size: clamp(2.4rem, 5.2vw, 4rem); font-weight: 300; }
+h2 { font-size: clamp(1.9rem, 4.6vw, 3.1rem); font-weight: 300; }
+h3 { font-size: 1.22rem; font-weight: 500; letter-spacing: -0.015em; text-transform: none; }
+.logo { font-weight: 600; letter-spacing: -0.02em; }
+
+/* Overline: the one place small-caps tracking still belongs. */
+.eyebrow {
+  font-family: var(--body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+}
+.eyebrow-light { color: rgba(255, 255, 255, 0.75); }
+
+/* --- Buttons: pills, real depth, colors that invert on hover --- */
+.btn {
+  border-radius: var(--radius-pill);
+  font-family: var(--body);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  text-transform: none;
+  padding: 14px 28px;
+  border: 1px solid transparent;
+  transition: transform 0.35s var(--ease), background 0.25s ease,
+              color 0.25s ease, box-shadow 0.35s var(--ease);
+}
+.btn-lg { padding: 17px 36px; font-size: 1rem; }
+.btn-primary {
+  background: var(--copper);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 10px 26px rgba(201, 96, 58, 0.28);
+}
+.btn-primary:hover {
+  background: var(--copper-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 18px 40px rgba(201, 96, 58, 0.34);
+}
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+.btn-outline-light:hover {
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+
+/* --- Nav: glass, matching the reference's sticky crystal header --- */
+.site-header.scrolled {
+  background: rgba(250, 249, 247, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(22, 24, 28, 0.07);
+  box-shadow: none;
+}
+.site-header.scrolled .logo,
+.site-header.scrolled .nav-phone { color: var(--ink); }
+.site-header.scrolled .header-nav a { color: var(--ink-soft); }
+.site-header.scrolled .header-nav a:hover { color: var(--ink); }
+.site-header.scrolled .hamburger span { background: var(--ink); }
+.header-inner { padding: 20px 24px; }
+.header-nav { font-family: var(--body); text-transform: none; letter-spacing: 0.005em; font-size: 0.92rem; font-weight: 500; }
+.logo-mark { border-radius: 7px; padding: 4px 10px; background: var(--copper); }
+
+/* --- Hero: text shifted off the busy centre of the photo ---
+ * 92vh made the hero photo dominate — a blurry arm and red shirt filled half
+ * the screen, and a dead gap opened under the CTAs. 76vh keeps it generous but
+ * crops the photo to its calmer band and pulls the ticker up into view. */
+.hero { min-height: 76vh; display: flex; align-items: center; }
+.hero-content {
+  max-width: 760px;
+  /* Left-aligned per the reference ("asymmetrical layouts create tension") and
+   * it lands the text on the calmer left side of the plumbing photo. */
+  margin-right: auto;
+  padding-top: 40px;
+  padding-bottom: 64px;
+}
+/* Stronger, directional scrim: dark where the text sits, clear on the right so
+ * the photo still reads. Fixes the measured contrast failure without hiding
+ * the image. */
+.hero-scrim {
+  background:
+    linear-gradient(100deg, rgba(9,11,14,0.90) 0%, rgba(9,11,14,0.72) 38%,
+                    rgba(9,11,14,0.34) 66%, rgba(9,11,14,0.22) 100%),
+    linear-gradient(to top, rgba(9,11,14,0.55) 0%, transparent 42%);
+}
+.hero h1 { margin-bottom: 22px; }
+.accent-text { color: var(--copper-hero); font-weight: 400; }
+.hero-lead {
+  font-size: clamp(1.05rem, 2vw, 1.24rem);
+  line-height: 1.62;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 58ch;
+  margin-bottom: 36px;
+}
+.hero-actions { gap: 14px; }
+
+/* --- Ticker: fade the cut-off edges ---
+ * The marquee slices words mid-letter at both ends, which reads as broken
+ * rather than as motion. A mask fades text out before the crop instead of
+ * chopping it. Also softened from a solid copper slab to a dark band so it
+ * stops competing with the primary CTA. */
+.ticker-wrap {
+  background: var(--steel);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.ticker-track span {
+  font-family: var(--body);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.82);
+}
+.ticker-track .dot { color: var(--copper-hero); }
+
+/* --- Area band: the loudest, cheapest element on the page in BOTH versions.
+ * A full-bleed solid copper slab. Swapped for the dark section the reference
+ * uses for contrast breaks, with copper kept as an accent only. */
+.area-band {
+  background: var(--steel-deep);
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+.area-band h2 { font-weight: 300; }
+.area-band p { color: rgba(255, 255, 255, 0.72); }
+
+/* --- Space. The cheapest thing that reads expensive. --- */
+.section { padding: 104px 24px; }
+.gallery { padding: 104px 24px; }
+.form-section { padding: 104px 24px; }
+@media (max-width: 640px) {
+  .section, .gallery, .form-section { padding: 68px 20px; }
+  .hero-content { padding-bottom: 44px; }
+
+  /* --- Phone fixes, from testing as the homeowner (not as the buyer) ---
+   * The person on this page has water on their floor. Pretty loses to fast. */
+
+  /* 1. The emergency CTA goes back to caps. Sentence case reads calmer, which
+   *    is right everywhere EXCEPT the one button a panicking person hunts for. */
+  .hero-call-btn { text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+
+  /* 2. The eyebrow wrapped so "ORANGE COUNTY" dangled alone on line 2.
+   *    Tighter tracking + smaller size keeps it on one line at 390px. */
+  .hero .eyebrow { font-size: 0.62rem; letter-spacing: 0.12em; }
+
+  /* 3. The marquee chopped words mid-letter ("Y LEAKS", "WATER HEAT") and the
+   *    chat bubble sat on top of it. It is pure decoration — no homeowner reads
+   *    a scrolling word list — so it does not earn phone screen space. */
+  .ticker-wrap { display: none; }
+
+  /* Headline: 3 lines at 390px pushed the CTAs down. */
+  h1 { font-size: clamp(2rem, 8.5vw, 2.5rem); }
+}
+
+/* --- Cards: flat by default, lift on hover (reference card_style) --- */
+.card, .service-card, .step, .gallery-item {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease),
+              border-color 0.3s ease;
+}
+.card:hover, .service-card:hover, .step:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+  border-color: transparent;
+}
+.gallery-item { overflow: hidden; }
+.gallery-item img { transition: transform 0.7s var(--ease); }
+.gallery-item:hover img { transform: scale(1.05); }
+
+/* --- Form inputs: minimal, bottom-border only --- */
+input, textarea, select {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  padding: 14px 2px;
+  font-family: var(--body);
+  font-size: 1rem;
+  transition: border-color 0.25s ease;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-bottom-color: var(--copper);
+}
+
+/* --- Before/after compare slider ---
+ * Proof beats claims: a homeowner drags a rusted pipe into new copper. Built on
+ * a real <input type="range"> so keyboard and screen-reader users get it for
+ * free — a custom mousedown/touchmove handler would have neither.
+ * The reveal is a clip-path width on the BEFORE layer, which the GPU animates,
+ * so dragging stays smooth on a phone. */
+.ba-section { background: var(--paper); }
+/* The header is sticky, so an anchor jump parks the heading underneath it.
+ * scroll-margin-top reserves the header's height on every jump target. */
+.ba-section, .gallery, .section, .area-band, .form-section { scroll-margin-top: 84px; }
+.ba-wrap { max-width: 900px; margin: 36px auto 0; }
+.ba-compare {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  /* Portrait source (800x1200) would eat the whole screen; crop to a
+   * comfortable landscape band instead. */
+  aspect-ratio: 4 / 3;
+  background: var(--steel);
+  touch-action: pan-y; /* let the page still scroll vertically over the widget */
+}
+.ba-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.ba-clip {
+  position: absolute; inset: 0;
+  width: var(--ba-pos, 50%);
+  overflow: hidden;
+}
+/* The BEFORE image must not squash as its container narrows — pin it to the
+ * widget's full width so only the reveal edge moves. */
+.ba-clip .ba-img { width: var(--ba-w, 900px); max-width: none; }
+
+.ba-tag {
+  position: absolute; top: 14px;
+  font-family: var(--body); font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: #fff; background: rgba(9, 11, 14, 0.72);
+  backdrop-filter: blur(6px);
+  padding: 6px 12px; border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+.ba-tag-before { left: 14px; }
+.ba-tag-after { right: 14px; }
+
+/* The range input is the real control: stretched over the image, invisible,
+ * but still focusable and draggable. */
+.ba-range {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  margin: 0; padding: 0;
+  border: none; background: transparent;
+  appearance: none; -webkit-appearance: none;
+  cursor: ew-resize;
+  z-index: 3;
+}
+.ba-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 48px; height: 100%;
+  background: transparent;
+  cursor: ew-resize;
+}
+.ba-range::-moz-range-thumb {
+  width: 48px; height: 100vh;
+  background: transparent; border: none;
+  cursor: ew-resize;
+}
+.ba-range:focus-visible { outline: 3px solid var(--copper-hero); outline-offset: 3px; }
+
+/* Visible handle, driven by the same --ba-pos the clip uses. */
+.ba-handle {
+  position: absolute; top: 0; bottom: 0;
+  left: var(--ba-pos, 50%);
+  width: 2px; margin-left: -1px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.45);
+  z-index: 2;
+  pointer-events: none;
+}
+.ba-handle::after {
+  content: "";
+  position: absolute; top: 50%; left: 50%;
+  width: 44px; height: 44px; /* 44px = minimum comfortable touch target */
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+/* Arrow hint drawn in CSS so no icon font or SVG is needed. */
+.ba-handle::before {
+  content: "‹ ›";
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -52%);
+  z-index: 1;
+  font: 700 1.05rem/1 var(--body);
+  letter-spacing: 0.12em;
+  color: var(--steel);
+}
+
+@media (max-width: 640px) {
+  .ba-compare { aspect-ratio: 3 / 4; }
+  .ba-wrap { margin-top: 24px; }
+}
+
+/* --- Chat button: borrow the glow, skip the rest ---
+ * The 21st.dev "Glowing AI Chat Assistant" was reviewed as a replacement. Its
+ * UI is a shell with no brain (chat-proxy.py is the actual product), it ships a
+ * hardcoded "GPT-4" badge we do not run, it is React, and its toolbar (attach /
+ * code / image) is built for developers, not for a homeowner with a leak.
+ * The one genuinely better idea in it is the pulsing glow, which pulls the eye
+ * far better than a flat pill. That part is free and needs no React. */
+.chat-toggle {
+  background: var(--steel);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 14px 22px;
+  font-family: var(--body);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28), 0 0 0 0 rgba(201, 96, 58, 0.5);
+  animation: chatGlow 2.8s ease-in-out infinite;
+  transition: transform 0.3s var(--ease);
+}
+.chat-toggle:hover { transform: translateY(-2px) scale(1.02); animation-play-state: paused; }
+@keyframes chatGlow {
+  0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,0.28), 0 0 0 0 rgba(201, 96, 58, 0.55); }
+  50%      { box-shadow: 0 4px 14px rgba(0,0,0,0.28), 0 0 0 12px rgba(201, 96, 58, 0); }
+}
+/* A pulsing element is a migraine/vestibular trigger — respect the OS setting. */
+@media (prefers-reduced-motion: reduce) {
+  .chat-toggle { animation: none; }
+}
+/* Declared AFTER the base .chat-toggle rule above, not in the earlier mobile
+ * block — same specificity means source order decides, and the earlier version
+ * of this lost silently. */
+@media (max-width: 640px) {
+  .chat-toggle { text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+}
+.chat-panel { border-radius: var(--radius); box-shadow: var(--shadow-lift); }
+
+/* --- Scroll reveal ---
+ * styles.css + script.js ALREADY implement this (.reveal -> .reveal.visible,
+ * with .stagger-1..5 delays and an IntersectionObserver). Do not redefine the
+ * class here — an earlier version of this file did, which broke the existing
+ * system and left every section stuck invisible. Only the easing is retuned. */
+.reveal { transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
