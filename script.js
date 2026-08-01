@@ -72,10 +72,33 @@ document.getElementById('estimateForm').addEventListener('submit', function (e) 
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
+  }).then(function (res) {
+    if (!res.ok) throw new Error('lead endpoint returned ' + res.status);
   }).catch(function (err) {
-    // Never leave the visitor staring at a broken form. The success message
-    // stays; log for the operator so a proxy outage is visible in the console.
+    // The send failed, so telling them "we got it" would be a lie — they would
+    // wait for a call that is never coming. Show the real state and give them
+    // the phone number, which always works even when the proxy does not.
     console.error('[wavemark] lead send failed', err);
+    var ok = document.getElementById('formSuccess');
+    if (ok) ok.hidden = true;
+    var warn = document.getElementById('formError');
+    if (!warn) {
+      warn = document.createElement('p');
+      warn.id = 'formError';
+      warn.setAttribute('role', 'alert');
+      warn.style.cssText = 'margin-top:1rem;font-weight:600;line-height:1.5';
+      (ok && ok.parentNode ? ok.parentNode : form.parentNode).appendChild(warn);
+    }
+    // BUSINESS_PHONE is scraped from the page, so it can be empty (unfilled
+    // template, or a site shipped without a nav number). A bare "tel:" link is
+    // dead on a phone, so only render a link when there are real digits.
+    var digits = (BUSINESS_PHONE || '').replace(/[^0-9+]/g, '');
+    warn.innerHTML = "Sorry — that didn't go through. Please call us" +
+      (digits
+        ? ' at <a href="tel:' + digits + '">' + BUSINESS_PHONE + '</a>'
+        : ' using the number at the top of the page') +
+      ' and we will take care of you right away.';
+    warn.hidden = false;
   });
 });
 
